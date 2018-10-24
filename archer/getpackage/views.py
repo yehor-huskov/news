@@ -1,11 +1,33 @@
 from getpackage.models import Post 
+
+from rest_framework import viewsets
+
+from django.contrib.auth.models import User
+
 from getpackage.serializers import PostSerializer
-from rest_framework import generics
+from getpackage.serializers import UserSerializer
+from getpackage.permissions import IsAuthorOrReadOnly
 
-class PostList(generics.ListCreateAPIView):
+from rest_framework import generics, permissions
+
+class PostAll(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-class PostDetail(generics.RetrieveUpdateDestroyAPIView):
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+class PostOne(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsAuthorOrReadOnly)
+   
+class UserAll(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class UserOne(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+

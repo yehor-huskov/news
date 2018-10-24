@@ -3,7 +3,9 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from getpackage import views
 
 urlpatterns = [
-    path('posts/', views.PostList.as_view()),
-    path('posts/<int:pk>/', views.PostDetail.as_view()),
+    path('posts/', views.PostAll.as_view()),
+    path('posts/<int:pk>/', views.PostOne.as_view()),
+    path('users/', views.UserAll.as_view()),
+    path('users/<int:pk>/', views.UserOne.as_view()),
 ]
 
