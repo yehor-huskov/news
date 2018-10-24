@@ -12,8 +12,7 @@ class Post(models.Model):
     text = models.TextField()
     author = models.ForeignKey('auth.User', related_name='posts', on_delete=models.CASCADE)
     date = models.DateTimeField(default=datetime.datetime.now)
-    approved = models.BooleanField()
-
+    approved = models.BooleanField(default=False)
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

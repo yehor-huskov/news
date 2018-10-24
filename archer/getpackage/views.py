@@ -2,9 +2,9 @@ from getpackage.models import Post
 
 from rest_framework import viewsets
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
-from getpackage.serializers import PostSerializer
+from getpackage.serializers import PostSerializer, JournalistPostSerializer
 from getpackage.serializers import UserSerializer
 from getpackage.permissions import IsAuthorOrReadOnly
 
@@ -22,10 +22,22 @@ class PostAll(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+    def get_serializer_class(self):
+        editor_group = Group.objects.get(name='editor')
+        if editor_group in self.request.user.groups.all():
+            return PostSerializer
+        return JournalistPostSerializer 
+
 class PostOne(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsAuthorOrReadOnly)
+
+    def get_serializer_class(self):
+        editor_group = Group.objects.get(name='editor')
+        if editor_group in self.request.user.groups.all():
+            return PostSerializer
+        return JournalistPostSerializer  
    
 class UserAll(generics.ListAPIView):
     queryset = User.objects.all()
