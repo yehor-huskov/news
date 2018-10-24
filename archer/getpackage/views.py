@@ -10,6 +10,14 @@ from getpackage.permissions import IsAuthorOrReadOnly
 
 from rest_framework import generics, permissions
 
+class PostSearch(generics.ListAPIView):
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get('q',None)
+        posts = Post.objects.filter(approved=True,text__contains=query) | Post.objects.filter(approved=True,title__contains=query)
+        return posts
+
 class PostApproved(generics.ListAPIView):
     queryset = Post.objects.filter(approved=True)
     serializer_class = PostSerializer
